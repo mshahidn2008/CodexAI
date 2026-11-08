@@ -8,6 +8,8 @@ pipeline {
 
     environment {
         CI = 'true'
+        PLAYWRIGHT_HTML_OPEN = 'never'
+        PLAYWRIGHT_JUNIT_OUTPUT_NAME = 'test-results/junit.xml'
     }
 
     stages {
@@ -32,21 +34,39 @@ pipeline {
 
         stage('Test') {
             steps {
-                bat 'npm test'
+                dir('playwright-report') {
+                    deleteDir()
+                }
+                dir('test-results') {
+                    deleteDir()
+                }
+                script {
+                    env.TESTS_STARTED = 'true'
+                }
+                bat 'npm test -- --reporter=html,junit'
             }
         }
     }
 
     post {
         always {
-            publishHTML(target: [
-                reportDir: 'playwright-report',
-                reportFiles: 'index.html',
-                reportName: 'Playwright Report',
-                keepAll: true,
-                alwaysLinkToLastBuild: true,
-                allowMissing: true
-            ])
+            script {
+                if (env.TESTS_STARTED == 'true') {
+                    catchError(buildResult: 'FAILURE', catchInterruptions: false) {
+                        publishHTML(target: [
+                            reportDir: 'playwright-report',
+                            reportFiles: 'index.html',
+                            reportName: 'Playwright Report',
+                            keepAll: true,
+                            alwaysLinkToLastBuild: true,
+                            allowMissing: false
+                        ])
+                    }
+                    catchError(buildResult: 'FAILURE', catchInterruptions: false) {
+                        junit testResults: 'test-results/junit.xml'
+                    }
+                }
+            }
             archiveArtifacts artifacts: 'test-results/**', allowEmptyArchive: true
         }
     }
