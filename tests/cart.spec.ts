@@ -11,7 +11,7 @@ test('add iPhone X, remove it from the cart, and continue shopping', async ({ pa
 
   await expect(page).toHaveURL(/angularpractice\/shop/, { timeout: 30000 });
   const product = page.locator('.card').filter({ hasText: 'iphone X' });
-  await expect(product).toBeVisible();
+  await expect(product).toBeVisible({ timeout: 30000 });
   await product.getByRole('button', { name: /add/i }).click();
 
   const checkout = page.getByText(/checkout\s*\(\s*\d+\s*\)/i);
@@ -21,7 +21,7 @@ test('add iPhone X, remove it from the cart, and continue shopping', async ({ pa
   const cartItem = page.locator('tr').filter({ hasText: 'iphone X' });
   await expect(cartItem).toBeVisible();
   await cartItem.getByRole('button', { name: /remove/i }).click();
-  await expect(cartItem).toHaveCount(0);
+  await expect(cartItem).toHaveCount(0, { timeout: 30000 });
 
   await page.getByRole('button', { name: /continue shopping/i }).click();
   await expect(page).toHaveURL(/angularpractice\/shop/);

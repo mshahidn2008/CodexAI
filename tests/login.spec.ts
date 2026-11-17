@@ -4,9 +4,18 @@ import { requireLoginCredentials } from './helpers';
 test('sign in after accepting the terms', async ({ page }) => {
   const { username, password } = requireLoginCredentials();
   await page.goto('https://rahulshettyacademy.com/loginpagePractise/');
-  await page.locator('#username').fill(username);
+
+  const usernameInput = page.getByRole('textbox', { name: /username/i });
+  await usernameInput.fill(username);
   await page.locator('#password').fill(password);
-  await page.locator('#terms').check();
+
+  const term = page.getByRole('checkbox', { name: /terms/i });
+
+  await expect(term).toBeVisible();
+
+  await term.check();
   await page.locator('#signInBtn').click();
   await expect(page).toHaveURL(/angularpractice\/shop/, { timeout: 30000 });
+
+
 });
