@@ -35,6 +35,9 @@ jobs:
 
       - name: Run Playwright tests
         run: npm test
+        env:
+          LOGIN_USERNAME: ${{ secrets.LOGIN_USERNAME }}
+          LOGIN_PASSWORD: ${{ secrets.LOGIN_PASSWORD }}
 
       - name: Upload Playwright report
         if: always()
