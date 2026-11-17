@@ -1,8 +1,10 @@
 import { test, expect } from '@playwright/test';
-import { requireLoginCredentials } from './helpers';
 
 test('add iPhone X, remove it from the cart, and continue shopping', async ({ page }) => {
-  const { username, password } = requireLoginCredentials();
+  const username = process.env.LOGIN_USERNAME;
+  const password = process.env.LOGIN_PASSWORD;
+  if (!username) throw new Error('LOGIN_USERNAME must be set and non-empty.');
+  if (!password) throw new Error('LOGIN_PASSWORD must be set and non-empty.');
   await page.goto('https://rahulshettyacademy.com/loginpagePractise/');
   await page.locator('#username').fill(username);
   await page.locator('#password').fill(password);
