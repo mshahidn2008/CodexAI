@@ -43,7 +43,12 @@ pipeline {
                 script {
                     env.TESTS_STARTED = 'true'
                 }
-                bat 'npm test -- --reporter=html,junit'
+                withCredentials([
+                    string(credentialsId: 'LOGIN_USERNAME', variable: 'LOGIN_USERNAME'),
+                    string(credentialsId: 'LOGIN_PASSWORD', variable: 'LOGIN_PASSWORD')
+                ]) {
+                    bat 'npm test -- --reporter=html,junit'
+                }
             }
         }
     }
